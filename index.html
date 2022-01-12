@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Autodesk Forge Instance Properties Sample</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="https://github.com/Autodesk-Forge/learn.forge.viewmodels/raw/master/img/favicon.ico">
+  <!-- Common packages: Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <!-- Autodesk Forge Viewer files -->
+  <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" type="text/css">
+  <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+  <!-- Extension -->
+  <script src="./instancepropertiesextension.js"></script>
+  <!-- this project files -->
+  <style type="text/css">
+    html,
+    body {
+      min-height: 100%;
+      height: 100%;
+    }
+    body {
+      padding-top: 5rem; /*space for the top nav bar*/
+    }
+    #forgeViewer {
+      width: 100%;
+      height: calc(100vh - 5rem);
+      position: relative;
+    }
+    /* Navbar */
+    .navbar > .container {
+      width: 100%;
+    }
+    .navbar-itemr {
+      position: relative;
+      float: right;
+      margin-bottom: 0;
+    }
+    .AllPropertiesExtension {
+      background-image: url(https://github.com/encharm/Font-Awesome-SVG-PNG/raw/master/white/png/24/dashboard.png);
+      background-size: 24px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  </style>
+</head>
+
+<body >
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <a href="http://developer.autodesk.com" class="navbar-brand" href="#"><img alt="Autodesk Forge" src="http://developer.static.autodesk.com/images/logo_forge-2-line.png" height="20"></a>
+      <div class="collapse navbar-collapse">
+        <div class="navbar-itemr navbar-form"><a class="form-control" href="https://github.com/JoaoMartins-Forge/forge-nodes-properties">Github</a></div>
+      </div>
+    </div>
+  </nav>
+  <!-- End of navbar -->
+
+  <div class="container-fluid fill">
+    <div class="row fill">
+      <div id="forgeViewer"></div>
+    </div>
+  </div>
+
+</body>
+
+<script>
+  let tokenurl = 'https://l15xenb90a.execute-api.us-east-1.amazonaws.com/default/GetToken';
+
+  window.onload = async () => {
+    await fetch(tokenurl).then( function(response){
+      return response.json();
+    }).then(function(token) {
+
+      let urn = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bXlidWNrZXRqcG9tL3BhcmFtc190ZXN0X2Rlc2tzLm53ZA==';
+
+      const options = {
+        env: 'AutodeskProduction',
+        accessToken: token
+      };
+    
+      Autodesk.Viewing.Initializer(options, () => {
+
+        const div = document.getElementById('forgeViewer');
+
+        const config = { extensions: ["InstancePropertiesExtension"] };
+        // const config = {};
+
+        viewer = new Autodesk.Viewing.Private.GuiViewer3D(div, config);
+        viewer.start();
+        viewer.setTheme("light-theme");
+        Autodesk.Viewing.Document.load(`urn:${urn}`, doc => {
+          var viewables = doc.getRoot().getDefaultGeometry();
+          viewer.loadDocumentNode(doc, viewables);
+        });
+      });
+    });
+  }
+
+</script>
+
+</html>
